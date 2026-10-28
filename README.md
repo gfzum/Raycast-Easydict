@@ -216,7 +216,7 @@ By default, the extension will automatically select the preferred language as th
 
 ### Automatic Query Selected Text
 
-On macOS, Search Word and the standalone Capture to Anki command read the source app's accessible text selection with a bundled helper. Empty or unavailable selections open manual input quietly; selection reads do not send a copy shortcut, access the clipboard, or request new permissions. Apps that do not expose a text selection through Accessibility require manual entry. Windows retains Raycast's selection API. Rebuild the arm64/x86_64 helper with `npm run build:selection`. Selection, timeout, and manual fallback contracts are tested with mocked native boundaries; native hotkey timing and sound still require a separate desktop check.
+Search Word and standalone Capture to Anki use Raycast's selected-text support. An empty or unavailable selection opens manual input without an extension error notification. No separate selection helper or new permission request is used. Any system feedback produced by Raycast's selection operation is controlled by the host and has not been verified silent. Automatic lookup can be disabled with **Query Selected Text Automatically** for Search Word.
 
 <details><summary> Automatic query selected text of the frontmost application, this option is turned on by default. </summary>
 

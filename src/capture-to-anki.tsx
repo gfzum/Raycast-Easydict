@@ -1,10 +1,9 @@
-import { Detail, type LaunchProps } from "@raycast/api";
+import { Detail, getSelectedText, type LaunchProps } from "@raycast/api";
 import { useEffect, useState } from "react";
 
 import CaptureForm from "@/features/anki/CaptureForm";
 import { type CaptureDraft, emptyDraft } from "@/features/anki/model";
 import { decodeDraft } from "@/features/anki/storage";
-import { getSelectedTextQuietly } from "@/shared/selectedText";
 
 type InitialCapture = { draft: CaptureDraft; direction: string } | { error: string };
 
@@ -38,7 +37,7 @@ export default function CaptureToAnki({
     // read the newly focused app or clipboard again when promoting the form.
     if (initial !== undefined) return;
     let active = true;
-    getSelectedTextQuietly()
+    getSelectedText()
       .then((value) => {
         if (active) setInitial({ draft: emptyDraft(value.trim()), direction: "" });
       })

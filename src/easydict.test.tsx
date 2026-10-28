@@ -6,8 +6,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import Easydict from "./easydict";
 
-const mock = vi.hoisted(() => ({ selected: vi.fn(), nativeSelected: vi.fn(), automatic: true, conflict: false }));
-vi.mock("@/shared/selectedText", () => ({ getSelectedTextQuietly: mock.selected }));
+const mock = vi.hoisted(() => ({ selected: vi.fn(), logError: vi.fn(), automatic: true, conflict: false }));
 vi.mock("@/consts", () => ({
   myPreferences: {
     get enableAutomaticQuerySelectedText() {
@@ -15,7 +14,7 @@ vi.mock("@/consts", () => ({
     },
   },
 }));
-vi.mock("@/shared/logger", () => ({ logTrace: vi.fn(), logError: vi.fn() }));
+vi.mock("@/shared/logger", () => ({ logTrace: vi.fn(), logError: mock.logError }));
 vi.mock("@/features/search/LanguageConflictError", () => ({
   checkIfPreferredLanguagesConflict: () => (mock.conflict ? <div>Language conflict</div> : null),
 }));
@@ -33,7 +32,7 @@ vi.mock("@/features/search/SearchWord", () => ({
   ),
 }));
 vi.mock("@raycast/api", () => ({
-  getSelectedText: mock.nativeSelected,
+  getSelectedText: mock.selected,
   LaunchType: { UserInitiated: "userInitiated" },
   List: Object.assign(
     ({ children, actions }: { children?: ReactNode; actions?: ReactNode }) => (
@@ -60,7 +59,6 @@ beforeEach(() => {
   vi.clearAllMocks();
   mock.automatic = true;
   mock.conflict = false;
-  mock.nativeSelected.mockRejectedValue(new Error("Selection unavailable"));
 });
 afterEach(cleanup);
 
@@ -98,14 +96,15 @@ it("opens manual input after selection fails", async () => {
   mock.selected.mockRejectedValue(new Error("Selection unavailable"));
   render(<Easydict {...launch} />);
   expect((await screen.findByTestId("lookup")).textContent).toBe("");
+  expect(mock.logError).not.toHaveBeenCalled();
 });
 
-it("opens manual input for an empty selection without invoking the general selection API", async () => {
-  mock.selected.mockResolvedValue("");
+it("opens manual input when Raycast returns an empty selection", async () => {
+  mock.selected.mockResolvedValue("   ");
   render(<Easydict {...launch} />);
   expect((await screen.findByTestId("lookup")).textContent).toBe("");
   expect(mock.selected).toHaveBeenCalledTimes(1);
-  expect(mock.nativeSelected).not.toHaveBeenCalled();
+  expect(mock.logError).not.toHaveBeenCalled();
 });
 
 it("allows manual entry while selection is pending and ignores its late completion", async () => {

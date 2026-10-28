@@ -216,7 +216,7 @@ npm install && npm run dev
 
 ### 划词查询
 
-在 macOS 上，Search Word 和独立的 Capture to Anki 通过随扩展打包的助手读取来源应用提供的辅助功能文字选区。没有选区、无法读取或超时时静默进入手动输入；不发送复制快捷键、不访问剪贴板，也不弹出新的权限申请。不提供辅助功能文字选区的应用需手动输入。Windows 保留 Raycast 选词接口。`npm run build:selection` 可重新构建 arm64／x86_64 助手。选区、超时及手动回退已通过模拟原生接口验证；真实快捷键的耗时和提示音仍需单独实机确认。
+Search Word 和独立的 Capture to Anki 使用 Raycast 原生选词。没有选区或无法读取时进入手动输入，不弹扩展错误提示；不再使用独立选词助手，也不申请新权限。Raycast 选词操作产生的系统反馈由宿主控制，尚未验证完全无声。Search Word 可通过 **Query Selected Text Automatically** 关闭自动选词。
 
 <details> <summary> 自动查询最前应用程序选定文本，默认开启。 </summary>
 

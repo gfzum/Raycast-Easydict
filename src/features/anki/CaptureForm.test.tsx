@@ -21,7 +21,6 @@ const mock = vi.hoisted(() => ({
 vi.mock("ofetch", () => ({ ofetch: mock.rpc }));
 vi.mock("@/consts", () => ({ myPreferences: { ankiConnectUrl: "http://localhost:8765" } }));
 vi.mock("./clipboard", () => ({ pasteContext: mock.paste }));
-vi.mock("@/shared/selectedText", () => ({ getSelectedTextQuietly: mock.selected }));
 vi.mock("./Settings", () => ({ default: () => null }));
 vi.mock("@raycast/utils", () => ({ showFailureToast: mock.failure }));
 vi.mock("@raycast/api", async () => {
@@ -231,6 +230,14 @@ describe("capture form", () => {
     fireEvent.change(screen.getByLabelText("Term → English"), { target: { value: "manual" } });
     expect((screen.getByLabelText("Term → English") as HTMLInputElement).value).toBe("manual");
     expect(mock.toast).not.toHaveBeenCalled();
+  });
+
+  it("prefills standalone capture from Raycast's selected text", async () => {
+    mock.selected.mockResolvedValue("  grouper  ");
+    render(<CaptureToAnki />);
+    await loaded();
+    expect((screen.getByLabelText("Term → English") as HTMLInputElement).value).toBe("grouper");
+    expect(mock.selected).toHaveBeenCalledTimes(1);
   });
 });
 

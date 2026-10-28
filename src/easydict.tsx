@@ -1,6 +1,6 @@
 /* Copyright (c) 2022~present by tisfeng, maxchang3, All Rights Reserved. */
 
-import { Action, ActionPanel, type LaunchProps, List } from "@raycast/api";
+import { Action, ActionPanel, getSelectedText, type LaunchProps, List } from "@raycast/api";
 import { useEffect, useState } from "react";
 
 import { myPreferences } from "@/consts";
@@ -9,7 +9,6 @@ import { isLanguageCode } from "@/core/language/utils";
 import { checkIfPreferredLanguagesConflict } from "@/features/search/LanguageConflictError";
 import SearchWord from "@/features/search/SearchWord";
 import { logTrace } from "@/shared/logger";
-import { getSelectedTextQuietly } from "@/shared/selectedText";
 
 logTrace("Easydict", "module loaded");
 
@@ -49,12 +48,14 @@ function InitialSearch({
   useEffect(() => {
     if (!needsSelection) return;
     let active = true;
-    getSelectedTextQuietly()
+    getSelectedText()
       .then((text) => {
         if (active) setSelectedText((current) => current ?? text.trim());
       })
       .catch(() => {
         if (!active) return;
+        // No selection is an ordinary manual lookup, not an extension error.
+        logTrace("Easydict", "Selected text unavailable; using manual input");
         setSelectedText((current) => current ?? "");
       });
     return () => {
