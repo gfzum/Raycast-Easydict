@@ -147,6 +147,7 @@
     "test:watch": "vitest",
     "test:windows": "powershell.exe -NoLogo -NoProfile -NonInteractive -STA -ExecutionPolicy Bypass -File tests/windows-native.ps1 -RequireOcr",
     "build:clipboard": "node scripts/build-clipboard.mjs",
+    "build:selection": "node scripts/build-selection.mjs",
     "test:clipboard": "node tests/clipboard-native.mjs",
     "test:ocr": "node tests/ocr-native.mjs"
   },

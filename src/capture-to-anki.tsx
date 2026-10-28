@@ -1,9 +1,10 @@
-import { Detail, getSelectedText, type LaunchProps, showToast, Toast } from "@raycast/api";
+import { Detail, type LaunchProps } from "@raycast/api";
 import { useEffect, useState } from "react";
 
 import CaptureForm from "@/features/anki/CaptureForm";
 import { type CaptureDraft, emptyDraft } from "@/features/anki/model";
 import { decodeDraft } from "@/features/anki/storage";
+import { getSelectedTextQuietly } from "@/shared/selectedText";
 
 type InitialCapture = { draft: CaptureDraft; direction: string } | { error: string };
 
@@ -37,18 +38,13 @@ export default function CaptureToAnki({
     // read the newly focused app or clipboard again when promoting the form.
     if (initial !== undefined) return;
     let active = true;
-    getSelectedText()
+    getSelectedTextQuietly()
       .then((value) => {
         if (active) setInitial({ draft: emptyDraft(value.trim()), direction: "" });
       })
       .catch(() => {
         if (!active) return;
         setInitial({ draft: emptyDraft(), direction: "" });
-        void showToast({
-          style: Toast.Style.Success,
-          title: "Enter a Word Manually",
-          message: "Selected text was unavailable. No clipboard was read.",
-        });
       });
     return () => {
       active = false;

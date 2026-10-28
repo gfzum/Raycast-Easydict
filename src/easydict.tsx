@@ -1,6 +1,6 @@
 /* Copyright (c) 2022~present by tisfeng, maxchang3, All Rights Reserved. */
 
-import { Action, ActionPanel, getSelectedText, type LaunchProps, List } from "@raycast/api";
+import { Action, ActionPanel, type LaunchProps, List } from "@raycast/api";
 import { useEffect, useState } from "react";
 
 import { myPreferences } from "@/consts";
@@ -8,7 +8,8 @@ import type { LanguageCode } from "@/core/language/types";
 import { isLanguageCode } from "@/core/language/utils";
 import { checkIfPreferredLanguagesConflict } from "@/features/search/LanguageConflictError";
 import SearchWord from "@/features/search/SearchWord";
-import { logError, logTrace } from "@/shared/logger";
+import { logTrace } from "@/shared/logger";
+import { getSelectedTextQuietly } from "@/shared/selectedText";
 
 logTrace("Easydict", "module loaded");
 
@@ -48,13 +49,12 @@ function InitialSearch({
   useEffect(() => {
     if (!needsSelection) return;
     let active = true;
-    getSelectedText()
+    getSelectedTextQuietly()
       .then((text) => {
         if (active) setSelectedText((current) => current ?? text.trim());
       })
-      .catch((error) => {
+      .catch(() => {
         if (!active) return;
-        logError("Easydict", "Could not read selected text", error);
         setSelectedText((current) => current ?? "");
       });
     return () => {

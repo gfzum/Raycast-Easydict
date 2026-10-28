@@ -21,6 +21,7 @@ const mock = vi.hoisted(() => ({
 vi.mock("ofetch", () => ({ ofetch: mock.rpc }));
 vi.mock("@/consts", () => ({ myPreferences: { ankiConnectUrl: "http://localhost:8765" } }));
 vi.mock("./clipboard", () => ({ pasteContext: mock.paste }));
+vi.mock("@/shared/selectedText", () => ({ getSelectedTextQuietly: mock.selected }));
 vi.mock("./Settings", () => ({ default: () => null }));
 vi.mock("@raycast/utils", () => ({ showFailureToast: mock.failure }));
 vi.mock("@raycast/api", async () => {
@@ -229,7 +230,7 @@ describe("capture form", () => {
     await loaded();
     fireEvent.change(screen.getByLabelText("Term → English"), { target: { value: "manual" } });
     expect((screen.getByLabelText("Term → English") as HTMLInputElement).value).toBe("manual");
-    expect(mock.toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Enter a Word Manually" }));
+    expect(mock.toast).not.toHaveBeenCalled();
   });
 });
 
